@@ -516,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 onPressed: () {
                   // Navigate to workouts tab
-                  DefaultTabController.of(context)?.animateTo(1);
+                  DefaultTabController.of(context).animateTo(1);
                 },
                 child: const Text('View All'),
               ),
@@ -649,7 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 onPressed: () {
                   // Navigate to food log tab
-                  DefaultTabController.of(context)?.animateTo(2);
+                  DefaultTabController.of(context).animateTo(2);
                 },
                 child: const Text('View All'),
               ),
@@ -797,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 onPressed: () {
                   // Navigate to mental health tab
-                  DefaultTabController.of(context)?.animateTo(3);
+                  DefaultTabController.of(context).animateTo(3);
                 },
                 child: const Text('View Details'),
               ),
@@ -874,7 +874,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 onPressed: () {
                   // Navigate to mental health tab
-                  DefaultTabController.of(context)?.animateTo(3);
+                  DefaultTabController.of(context).animateTo(3);
                 },
                 child: const Text('View All'),
               ),

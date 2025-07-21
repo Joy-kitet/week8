@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/workout.dart';
 import 'firebase_service.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
 
 class WorkoutService {
   static final FirebaseFirestore _firestore = FirebaseService.firestore;
@@ -27,7 +29,7 @@ class WorkoutService {
         durationMinutes: 20,
         category: 'Cardio',
         difficulty: 'Beginner',
-        videoUrl: '/placeholder-video.mp4',
+        videoUrl: 'https://youtu.be/FeR-4_Opt-g',
         thumbnailUrl: '/placeholder.svg?height=200&width=300',
         equipment: ['None'],
         calories: 200,
@@ -63,7 +65,7 @@ class WorkoutService {
         durationMinutes: 25,
         category: 'HIIT',
         difficulty: 'Advanced',
-        videoUrl: '/placeholder-video.mp4',
+        videoUrl: 'https://youtu.be/FeR-4_Opt-g',
         thumbnailUrl: '/placeholder.svg?height=200&width=300',
         equipment: ['None'],
         calories: 300,
@@ -237,3 +239,6 @@ class WorkoutService {
     }
   }
 }
+
+
+

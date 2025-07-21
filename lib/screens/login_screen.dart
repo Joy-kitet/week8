@@ -753,7 +753,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => ProfileSetupScreen()),
+            MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
           );
         }
       } else {

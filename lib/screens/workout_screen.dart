@@ -135,40 +135,85 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Widget _buildStatsCards() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildStatCard(
-            'This Week',
-            '${WorkoutService.getTotalWorkoutsThisWeek()}',
-            'workouts',
-            Icons.fitness_center,
-            Colors.blue,
-          ),
+  final thisWeekWorkouts = WorkoutService.getTotalWorkoutsThisWeek();
+  final thisWeekCaloriesBurned = WorkoutService.getTotalCaloriesBurnedThisWeek();
+  final thisWeekWorkoutMinutes = WorkoutService.getTotalWorkoutMinutesThisWeek();
+
+  return Row(
+    children: [
+      // 🏋️‍♀️ Workouts
+      Expanded(
+        child: FutureBuilder<int>(
+          future: thisWeekWorkouts,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Text('Error');
+            } else {
+              return _buildStatCard(
+                'This Week',
+                '${snapshot.data}',
+                'workouts',
+                Icons.fitness_center,
+                Colors.blue,
+              );
+            }
+          },
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Calories',
-            '${WorkoutService.getTotalCaloriesBurnedThisWeek()}',
-            'burned',
-            Icons.local_fire_department,
-            Colors.red,
-          ),
+      ),
+
+      const SizedBox(width: 12),
+
+      // 🔥 Calories
+      Expanded(
+        child: FutureBuilder<int>(
+          future: thisWeekCaloriesBurned,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Text('Error');
+            } else {
+              return _buildStatCard(
+                'Calories',
+                '${snapshot.data}',
+                'burned',
+                Icons.local_fire_department,
+                Colors.red,
+              );
+            }
+          },
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Minutes',
-            '${WorkoutService.getTotalWorkoutMinutesThisWeek()}',
-            'active',
-            Icons.timer,
-            Colors.green,
-          ),
+      ),
+
+      const SizedBox(width: 12),
+
+      // ⏱️ Minutes
+      Expanded(
+        child: FutureBuilder<int>(
+          future: thisWeekWorkoutMinutes,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Text('Error');
+            } else {
+              return _buildStatCard(
+                'Minutes',
+                '${snapshot.data}',
+                'active',
+                Icons.timer,
+                Colors.green,
+              );
+            }
+          },
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   Widget _buildStatCard(String title, String value, String subtitle, IconData icon, Color color) {
     return Container(

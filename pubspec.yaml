@@ -18,6 +18,7 @@ dependencies:
   cloud_firestore: ^4.13.6
   firebase_storage: ^11.5.6
   firebase_messaging: ^14.7.10
+  youtube_player_flutter: ^8.1.0 # or latest version
   
   # UI & State Management
   cupertino_icons: ^1.0.2

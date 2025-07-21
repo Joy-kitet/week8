@@ -102,7 +102,7 @@ void main() async {
   );
 
   
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -135,11 +135,11 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: AuthWrapper(),
+      home: const AuthWrapper(),
       routes: {
-        '/login': (context) => LoginScreen(),
+        '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
-        '/profile-setup': (context) => ProfileSetupScreen(),
+        '/profile-setup': (context) => const ProfileSetupScreen(),
         '/main': (context) => const MainScreen(),
       },
     );
@@ -178,12 +178,12 @@ class AuthWrapper extends StatelessWidget {
               if (profileSnapshot.data == true) {
                 return const MainScreen();
               } else {
-                return ProfileSetupScreen();
+                return const ProfileSetupScreen();
               }
             },
           );
         } else {
-          return LoginScreen();
+          return const LoginScreen();
         }
       },
     );

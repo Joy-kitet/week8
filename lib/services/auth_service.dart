@@ -262,7 +262,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart' as AppUser;
 import 'firebase_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 
 
 class AuthService {
