@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -51,13 +52,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.label,
-          style: TextStyle(
-            fontSize: 16,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextFormField(
           controller: widget.controller,
           validator: widget.validator,
@@ -65,16 +64,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
           enabled: widget.enabled,
           inputFormatters: widget.inputFormatters,
           obscureText: widget.isPassword ? _obscureText : false,
+          style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: widget.hint,
+            hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppTheme.textSecondary,
+            ),
             prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: Colors.grey[600])
+                ? Icon(widget.prefixIcon, color: AppTheme.textSecondary)
                 : null,
             suffixIcon: showPasswordToggle
                 ? IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.grey[600],
+                      color: AppTheme.textSecondary,
                     ),
                     onPressed: () {
                       setState(() {
@@ -83,12 +86,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     },
                   )
                 : widget.suffixIcon,
-            filled: true,
-            fillColor: widget.enabled ? Colors.grey[50] : Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],

@@ -701,10 +701,11 @@
 import 'package:flutter/material.dart';
 import 'package:wellness/screens/main_screen.dart';
 import 'package:wellness/screens/profile_setup_screen.dart';
+import '../theme/app_theme.dart';
+import '../widgets/gradient_button.dart';
 import '../services/auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -796,7 +797,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightGray,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -807,29 +808,40 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 60),
 
-                Center(
+                // Logo and Welcome
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: AppTheme.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: AppTheme.softShadow,
+                  ),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.lock_outline,
-                        size: 80,
-                        color: Theme.of(context).primaryColor,
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(
+                          Icons.spa,
+                          size: 48,
+                          color: AppTheme.white,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       Text(
-                        'Welcome Back',
-                        style: TextStyle(
-                          fontSize: 28,
+                        'Welcome to FitMind',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to your account',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+                        'Your wellness journey starts here',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppTheme.textSecondary,
                         ),
                       ),
                     ],
@@ -867,7 +879,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: AppTheme.primaryBlue,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -882,7 +894,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                       color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.red[200]!),
                     ),
                     child: Text(
@@ -892,10 +904,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                CustomButton(
+                GradientButton(
                   text: _isLoading ? 'Signing In...' : 'Sign In',
                   onPressed: _isLoading ? null : _login,
                   isLoading: _isLoading,
+                  gradient: AppTheme.primaryGradient,
                 ),
 
                 const SizedBox(height: 24),
@@ -907,8 +920,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'OR',
-                        style: TextStyle(
-                          color: Colors.grey[600],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -919,7 +932,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                CustomButton(
+                GradientButton(
                   text: 'Create New Account',
                   onPressed: () {
                     Navigator.push(
@@ -927,8 +940,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (context) => const SignupScreen()),
                     );
                   },
-                  backgroundColor: Colors.grey[100],
-                  textColor: Theme.of(context).primaryColor,
+                  gradient: LinearGradient(
+                    colors: [AppTheme.white, AppTheme.white],
+                  ),
+                  textColor: AppTheme.primaryBlue,
                 ),
               ],
             ),

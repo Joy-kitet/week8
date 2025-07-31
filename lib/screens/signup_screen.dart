@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../widgets/gradient_button.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -90,12 +91,12 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.grey[800]),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -106,29 +107,40 @@ class _SignupScreenState extends State<SignupScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              Center(
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: AppTheme.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: AppTheme.softShadow,
+                ),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.person_add_outlined,
-                      size: 80,
-                      color: Theme.of(context).primaryColor,
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.secondaryGradient,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.person_add,
+                        size: 48,
+                        color: AppTheme.white,
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 28,
+                      'Join FitMind',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Fill in your information below',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
+                      'Start your wellness transformation',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppTheme.textSecondary,
                       ),
                     ),
                   ],
@@ -210,22 +222,29 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 32),
                     
                     // Terms and Conditions
-                    Text(
-                      'By creating an account, you agree to our Terms of Service and Privacy Policy.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.lightBlue,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      textAlign: TextAlign.center,
+                      child: Text(
+                        'By creating an account, you agree to our Terms of Service and Privacy Policy.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.darkBlue,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     
                     const SizedBox(height: 24),
                     
                     // Signup Button
-                    CustomButton(
+                    GradientButton(
                       text: 'Create Account',
                       onPressed: _signup,
                       isLoading: _isLoading,
+                      gradient: AppTheme.secondaryGradient,
                     ),
                     
                     const SizedBox(height: 16),
@@ -236,8 +255,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: [
                         Text(
                           'Already have an account? ',
-                          style: TextStyle(
-                            color: Colors.grey[600],
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
                           ),
                         ),
                         TextButton(
@@ -247,7 +266,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Text(
                             'Sign In',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: AppTheme.primaryBlue,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
