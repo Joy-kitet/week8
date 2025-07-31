@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/gradient_button.dart';
 import '../models/food_entry.dart';
 import '../services/food_service.dart';
-import '../widgets/custom_button.dart';
 
 class FoodLogScreen extends StatefulWidget {
   const FoodLogScreen({super.key});
@@ -43,77 +45,89 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
+        backgroundColor: AppTheme.lightGray,
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.lightGray,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 40),
             // Header
             _buildHeader(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Date Selector
             _buildDateSelector(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Nutrition Summary
             _buildNutritionSummary(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Meals
             _buildMealsSection(),
+            const SizedBox(height: 100), // Bottom padding
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddMealDialog(),
-        backgroundColor: Colors.green[400],
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppTheme.primaryGreen,
+        child: const Icon(Icons.add, color: AppTheme.white),
       ),
     );
   }
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green[400]!, Colors.green[600]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.secondaryGradient,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: AppTheme.mediumShadow,
       ),
       child: Row(
         children: [
-          const Icon(Icons.restaurant, color: Colors.white, size: 32),
+          const Icon(Icons.restaurant, color: AppTheme.white, size: 32),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Food Log',
+                  'Nutrition Tracker',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+                    color: AppTheme.white,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'Track your nutrition',
+                  'Fuel your body right',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: AppTheme.white.withOpacity(0.9),
                     fontSize: 16,
                   ),
                 ),
               ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.analytics_outlined,
+              color: AppTheme.white,
+              size: 24,
             ),
           ),
         ],
@@ -122,20 +136,7 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
   }
 
   Widget _buildDateSelector() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -146,14 +147,12 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               });
               _loadTodayData();
             },
-            icon: const Icon(Icons.chevron_left),
+            icon: const Icon(Icons.chevron_left, color: AppTheme.primaryBlue),
           ),
           Text(
             '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-            style: TextStyle(
-              fontSize: 18,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
             ),
           ),
           IconButton(
@@ -163,7 +162,12 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               });
               _loadTodayData();
             } : null,
-            icon: const Icon(Icons.chevron_right),
+            icon: Icon(
+              Icons.chevron_right, 
+              color: _selectedDate.isBefore(DateTime.now()) 
+                  ? AppTheme.primaryBlue 
+                  : AppTheme.mediumGray,
+            ),
           ),
         ],
       ),
@@ -176,29 +180,14 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
     final carbs = _todayNutrition['carbs'] ?? 0;
     final fat = _todayNutrition['fat'] ?? 0;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Today\'s Nutrition',
-            style: TextStyle(
-              fontSize: 18,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
             ),
           ),
           const SizedBox(height: 16),
@@ -207,26 +196,31 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.green[50],
-              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                colors: [AppTheme.orange.withOpacity(0.1), AppTheme.orange.withOpacity(0.05)],
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Calories',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.local_fire_department, color: AppTheme.orange, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Calories',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   '$calories kcal',
-                  style: TextStyle(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
+                    color: AppTheme.orange,
                   ),
                 ),
               ],
@@ -239,15 +233,15 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildMacroCard('Protein', '${protein}g', Colors.red),
+                child: _buildMacroCard('Protein', '${protein}g', Colors.red[400]!),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
-                child: _buildMacroCard('Carbs', '${carbs}g', Colors.blue),
+                child: _buildMacroCard('Carbs', '${carbs}g', AppTheme.primaryBlue),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
-                child: _buildMacroCard('Fat', '${fat}g', Colors.orange),
+                child: _buildMacroCard('Fat', '${fat}g', AppTheme.yellow),
               ),
             ],
           ),
@@ -258,26 +252,26 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
 
   Widget _buildMacroCard(String label, String value, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textSecondary,
             ),
           ),
         ],
@@ -293,10 +287,8 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
       children: [
         Text(
           'Meals',
-          style: TextStyle(
-            fontSize: 20,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
           ),
         ),
         const SizedBox(height: 16),
@@ -319,46 +311,46 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
 
   Widget _buildMealTypeCard(String mealType, List<MealEntry> meals) {
     final totalCalories = meals.fold<int>(0, (sum, meal) => (sum ?? 0) + (meal.totalCalories ?? 0));
+    final mealIcon = _getMealIcon(mealType);
+    final mealColor = _getMealColor(mealType);
     
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
       child: Column(
         children: [
           // Header
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.green[50],
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              color: mealColor.withOpacity(0.1),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  mealType,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: mealColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(mealIcon, color: mealColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    mealType,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: mealColor,
+                    ),
                   ),
                 ),
                 Text(
                   '$totalCalories cal',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Colors.green[700],
+                    color: mealColor,
                   ),
                 ),
               ],
@@ -371,8 +363,8 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
               padding: const EdgeInsets.all(16),
               child: Text(
                 'No ${mealType.toLowerCase()} logged yet',
-                style: TextStyle(
-                  color: Colors.grey[500],
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondary,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -392,18 +384,16 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
                             Expanded(
                               child: Text(
                                 '${foodWithQuantity.foodEntry.name} (${foodWithQuantity.quantity}x)',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[700],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
                             Text(
                               '${(foodWithQuantity.foodEntry.calories * foodWithQuantity.quantity).round()} cal',
-                              style: TextStyle(
-                                fontSize: 14,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
+                                color: AppTheme.textSecondary,
                               ),
                             ),
                           ],
@@ -417,6 +407,36 @@ class _FoodLogScreenState extends State<FoodLogScreen> {
         ],
       ),
     );
+  }
+
+  IconData _getMealIcon(String mealType) {
+    switch (mealType.toLowerCase()) {
+      case 'breakfast':
+        return Icons.free_breakfast;
+      case 'lunch':
+        return Icons.lunch_dining;
+      case 'dinner':
+        return Icons.dinner_dining;
+      case 'snacks':
+        return Icons.cookie;
+      default:
+        return Icons.restaurant;
+    }
+  }
+
+  Color _getMealColor(String mealType) {
+    switch (mealType.toLowerCase()) {
+      case 'breakfast':
+        return AppTheme.orange;
+      case 'lunch':
+        return AppTheme.primaryGreen;
+      case 'dinner':
+        return AppTheme.primaryBlue;
+      case 'snacks':
+        return AppTheme.purple;
+      default:
+        return AppTheme.textSecondary;
+    }
   }
 
   void _showAddMealDialog() {
@@ -495,10 +515,12 @@ class _AddMealDialogState extends State<AddMealDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: AppTheme.white,
       child: Container(
         width: double.maxFinite,
         height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -506,28 +528,26 @@ class _AddMealDialogState extends State<AddMealDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Add Meal',
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.close, color: AppTheme.textSecondary),
                 ),
               ],
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             
             // Meal Type Selector
             DropdownButtonFormField<String>(
               value: _selectedMealType,
               decoration: const InputDecoration(
                 labelText: 'Meal Type',
-                border: OutlineInputBorder(),
               ),
               items: _mealTypes.map((type) => 
                 DropdownMenuItem(
@@ -542,7 +562,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
               },
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             
             // Search
             TextField(
@@ -550,19 +570,17 @@ class _AddMealDialogState extends State<AddMealDialog> {
               decoration: const InputDecoration(
                 labelText: 'Search Foods',
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
               ),
               onChanged: _searchFoods,
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             
             // Selected Foods
             if (_selectedFoods.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Selected Foods:',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -577,7 +595,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
                       title: Text(foodWithQuantity.foodEntry.name),
                       subtitle: Text('Quantity: ${foodWithQuantity.quantity}'),
                       trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                         onPressed: () {
                           setState(() {
                             _selectedFoods.removeAt(index);
@@ -588,14 +606,13 @@ class _AddMealDialogState extends State<AddMealDialog> {
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
             ],
             
             // Available Foods
-            const Text(
+            Text(
               'Available Foods:',
-              style: TextStyle(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -612,7 +629,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
                           title: Text(food.name),
                           subtitle: Text('${food.calories} cal • ${food.category}'),
                           trailing: IconButton(
-                            icon: const Icon(Icons.add_circle, color: Colors.green),
+                            icon: const Icon(Icons.add_circle_outline, color: AppTheme.primaryGreen),
                             onPressed: () => _showQuantityDialog(food),
                           ),
                         );
@@ -620,15 +637,15 @@ class _AddMealDialogState extends State<AddMealDialog> {
                     ),
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             
             // Save Button
             SizedBox(
               width: double.infinity,
-              child: CustomButton(
+              child: GradientButton(
                 text: 'Save Meal',
                 onPressed: _selectedFoods.isNotEmpty ? _saveMeal : null,
-                backgroundColor: Colors.green[400],
+                gradient: AppTheme.secondaryGradient,
               ),
             ),
           ],
@@ -643,6 +660,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('Add ${food.name}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -653,7 +671,6 @@ class _AddMealDialogState extends State<AddMealDialog> {
               controller: quantityController,
               decoration: const InputDecoration(
                 labelText: 'Quantity',
-                border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
@@ -662,7 +679,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -675,7 +692,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
               });
               Navigator.pop(context);
             },
-            child: const Text('Add'),
+            child: const Text('Add', style: TextStyle(color: AppTheme.primaryBlue)),
           ),
         ],
       ),
@@ -699,7 +716,8 @@ class _AddMealDialogState extends State<AddMealDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Meal added successfully!'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.primaryGreen,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } catch (e) {
@@ -707,6 +725,7 @@ class _AddMealDialogState extends State<AddMealDialog> {
         const SnackBar(
           content: Text('Failed to add meal'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

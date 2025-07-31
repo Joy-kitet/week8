@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/gradient_button.dart';
 import '../models/mental_health.dart';
 import '../services/mental_health_service.dart';
-import '../widgets/custom_button.dart';
 
 class MentalHealthScreen extends StatefulWidget {
   const MentalHealthScreen({super.key});
@@ -51,43 +53,42 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
+        backgroundColor: AppTheme.lightGray,
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.lightGray,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 40),
             // Header
             _buildHeader(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
-            // Daily Mindfulness Tip
-            _buildDailyTip(),
-            const SizedBox(height: 20),
+            // Mental Health Overview
+            _buildMentalHealthOverview(),
+            const SizedBox(height: 32),
 
             // Quick Actions
             _buildQuickActions(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Daily Quote & Affirmation
             _buildDailyContent(),
-            const SizedBox(height: 24),
-
-            // Mood Overview
-            _buildMoodOverview(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Active Challenges
             if (_activeChallenges.isNotEmpty) _buildActiveChallenges(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Professional Help
             _buildProfessionalHelp(),
+            const SizedBox(height: 100), // Bottom padding
           ],
         ),
       ),
@@ -96,18 +97,15 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.purple[400]!, Colors.purple[600]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.purpleGradient,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: AppTheme.mediumShadow,
       ),
       child: Row(
         children: [
-          const Icon(Icons.psychology, color: Colors.white, size: 32),
+          const Icon(Icons.psychology, color: AppTheme.white, size: 32),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -116,19 +114,31 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
                 const Text(
                   'Mental Wellness',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+                    color: AppTheme.white,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'Take care of your mind',
+                  'Nurture your inner peace',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: AppTheme.white.withOpacity(0.9),
                     fontSize: 16,
                   ),
                 ),
               ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.spa,
+              color: AppTheme.white,
+              size: 24,
             ),
           ),
         ],
@@ -136,38 +146,86 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
     );
   }
 
-  Widget _buildDailyTip() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[200]!),
-      ),
+  Widget _buildMentalHealthOverview() {
+    return AnimatedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb, color: Colors.blue[600], size: 24),
-              const SizedBox(width: 8),
-              Text(
-                'Daily Mindfulness Tip',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blue[800],
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.purple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.mood,
+                  color: AppTheme.purple,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'This Week\'s Mood',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      _averageMood > 0 ? '${_averageMood.toStringAsFixed(1)}/5' : 'No data yet',
+                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      _getMoodDescription(_averageMood),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            _dailyTip,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.blue[700],
-              height: 1.4,
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.lightBlue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.lightbulb_outline, color: AppTheme.primaryBlue),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Daily Mindfulness Tip',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _dailyTip,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.darkBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -180,54 +238,43 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
-          style: TextStyle(
-            fontSize: 20,
+          'Wellness Activities',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
           ),
         ),
         const SizedBox(height: 16),
-        Row(
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.2,
           children: [
-            Expanded(
-              child: _buildActionCard(
-                'Mood Check-in',
-                Icons.mood,
-                Colors.green,
-                () => _navigateToMoodTracker(),
-              ),
+            _buildActionCard(
+              'Mood Check-in',
+              Icons.mood,
+              AppTheme.primaryGreen,
+              () => _navigateToMoodTracker(),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                'Meditate',
-                Icons.self_improvement,
-                Colors.purple,
-                () => _navigateToMeditations(),
-              ),
+            _buildActionCard(
+              'Meditate',
+              Icons.self_improvement,
+              AppTheme.purple,
+              () => _navigateToMeditations(),
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                'Breathing',
-                Icons.air,
-                Colors.blue,
-                () => _navigateToBreathing(),
-              ),
+            _buildActionCard(
+              'Breathing',
+              Icons.air,
+              AppTheme.primaryBlue,
+              () => _navigateToBreathing(),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                'Gratitude',
-                Icons.favorite,
-                Colors.pink,
-                () => _navigateToGratitude(),
-              ),
+            _buildActionCard(
+              'Gratitude',
+              Icons.favorite,
+              AppTheme.pink,
+              () => _navigateToGratitude(),
             ),
           ],
         ),
@@ -236,44 +283,30 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
   }
 
   Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
+    return AnimatedCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 1),
+      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.zero,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 32),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[800],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -283,35 +316,26 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
       children: [
         // Daily Quote
         if (_dailyQuote != null)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
+          AnimatedCard(
             margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.format_quote, color: Colors.orange[600]),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.format_quote, color: AppTheme.orange),
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Daily Quote',
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
                       ),
                     ),
                   ],
@@ -319,20 +343,17 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
                 const SizedBox(height: 12),
                 Text(
                   '"${_dailyQuote!.quote}"',
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontStyle: FontStyle.italic,
-                    color: Colors.grey[700],
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '- ${_dailyQuote!.author}',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
+                    color: AppTheme.textSecondary,
                   ),
                 ),
               ],
@@ -341,30 +362,27 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
 
         // Daily Affirmation
         if (_dailyAffirmation != null)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.pink[100]!, Colors.pink[50]!],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
+          AnimatedCard(
+            backgroundColor: AppTheme.lightGreen,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.self_improvement, color: Colors.pink[600]),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryGreen.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.self_improvement, color: AppTheme.primaryGreen),
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Daily Affirmation',
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.pink[800],
+                        color: AppTheme.darkGreen,
                       ),
                     ),
                   ],
@@ -372,10 +390,9 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
                 const SizedBox(height: 12),
                 Text(
                   _dailyAffirmation!.text,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Colors.pink[700],
+                    color: AppTheme.darkGreen,
                     height: 1.4,
                   ),
                 ),
@@ -383,93 +400,6 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildMoodOverview() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'This Week\'s Mood',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-              ),
-              TextButton(
-                onPressed: () => _navigateToMoodHistory(),
-                child: const Text('View History'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.mood,
-                  color: Colors.green[600],
-                  size: 32,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Average Mood',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    Text(
-                      _averageMood > 0 ? '${_averageMood.toStringAsFixed(1)}/5' : 'No data yet',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    Text(
-                      _getMoodDescription(_averageMood),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -482,10 +412,8 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
           children: [
             Text(
               'Active Challenges',
-              style: TextStyle(
-                fontSize: 20,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
               ),
             ),
             TextButton(
@@ -497,28 +425,15 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
         const SizedBox(height: 16),
         Column(
           children: _activeChallenges.take(2).map((progress) => 
-            Container(
+            AnimatedCard(
               margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.purple[100],
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppTheme.purple.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
                       '🏆',
@@ -532,17 +447,14 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
                       children: [
                         Text(
                           'Challenge in Progress',
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[800],
                           ),
                         ),
                         Text(
                           'Day ${progress.currentDay} of ${progress.completedDays.length}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
                           ),
                         ),
                       ],
@@ -550,8 +462,8 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
                   ),
                   CircularProgressIndicator(
                     value: progress.currentDay / progress.completedDays.length,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purple[400]!),
+                    backgroundColor: AppTheme.mediumGray,
+                    valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.purple),
                   ),
                 ],
               ),
@@ -563,24 +475,25 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
   }
 
   Widget _buildProfessionalHelp() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.red[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red[200]!),
-      ),
+    return AnimatedCard(
+      backgroundColor: Colors.red[50],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.support_agent, color: Colors.red[600], size: 24),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.support_agent, color: Colors.red[600], size: 20),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Need Professional Help?',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.red[800],
                 ),
@@ -590,17 +503,18 @@ class _MentalHealthScreenState extends State<MentalHealthScreen> {
           const SizedBox(height: 12),
           Text(
             'If you\'re experiencing persistent mental health challenges, consider reaching out to a professional.',
-            style: TextStyle(
-              fontSize: 14,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.red[700],
               height: 1.4,
             ),
           ),
           const SizedBox(height: 16),
-          CustomButton(
+          GradientButton(
             text: 'View Resources',
             onPressed: () => _navigateToProfessionalHelp(),
-            backgroundColor: Colors.red[400],
+            gradient: LinearGradient(
+              colors: [Colors.red[400]!, Colors.red[600]!],
+            ),
           ),
         ],
       ),
@@ -672,6 +586,7 @@ class MoodTrackerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Mood Tracker')),
       body: const Center(child: Text('Mood Tracker Screen')),
     );
@@ -684,6 +599,7 @@ class MeditationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Meditations')),
       body: const Center(child: Text('Meditations Screen')),
     );
@@ -696,6 +612,7 @@ class BreathingExercisesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Breathing Exercises')),
       body: const Center(child: Text('Breathing Exercises Screen')),
     );
@@ -708,6 +625,7 @@ class GratitudeJournalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Gratitude Journal')),
       body: const Center(child: Text('Gratitude Journal Screen')),
     );
@@ -720,6 +638,7 @@ class MoodHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Mood History')),
       body: const Center(child: Text('Mood History Screen')),
     );
@@ -732,6 +651,7 @@ class ChallengesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Mental Health Challenges')),
       body: const Center(child: Text('Challenges Screen')),
     );
@@ -744,6 +664,7 @@ class ProfessionalHelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Professional Help')),
       body: const Center(child: Text('Professional Help Screen')),
     );

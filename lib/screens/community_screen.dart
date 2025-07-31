@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../widgets/animated_card.dart';
+import '../widgets/gradient_button.dart';
 import '../models/community.dart';
 import '../services/community_service.dart';
-import '../widgets/custom_button.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -55,20 +57,26 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.lightGray,
       body: Column(
         children: [
+          const SizedBox(height: 40),
           // Header
           _buildHeader(),
           
           // Tab Bar
           Container(
-            color: Colors.white,
+            color: AppTheme.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TabBar(
               controller: _tabController,
-              labelColor: Colors.blue[600],
-              unselectedLabelColor: Colors.grey[600],
-              indicatorColor: Colors.blue[600],
+              labelColor: AppTheme.primaryBlue,
+              unselectedLabelColor: AppTheme.textSecondary,
+              indicatorColor: AppTheme.primaryBlue,
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
               tabs: const [
                 Tab(text: 'Feed'),
                 Tab(text: 'Forums'),
@@ -94,27 +102,25 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreatePostDialog(),
-        backgroundColor: Colors.blue[600],
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppTheme.primaryBlue,
+        child: const Icon(Icons.add, color: AppTheme.white),
       ),
     );
   }
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue[400]!, Colors.blue[600]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppTheme.primaryGradient,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+        boxShadow: AppTheme.mediumShadow,
       ),
       child: SafeArea(
         bottom: false,
         child: Row(
           children: [
-            const Icon(Icons.people, color: Colors.white, size: 32),
+            const Icon(Icons.people, color: AppTheme.white, size: 32),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -123,24 +129,31 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
                   const Text(
                     'Community',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+                      color: AppTheme.white,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'Connect, share, and grow together',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: AppTheme.white.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
                 ],
               ),
             ),
-            IconButton(
-              onPressed: () => _navigateToProfile(),
-              icon: const Icon(Icons.account_circle, color: Colors.white, size: 32),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconButton(
+                onPressed: () => _navigateToProfile(),
+                icon: const Icon(Icons.account_circle, color: AppTheme.white, size: 24),
+              ),
             ),
           ],
         ),
@@ -157,35 +170,36 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
       children: [
         // Category Filter
         Container(
-          height: 50,
+          height: 60,
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: _categories.length,
             itemBuilder: (context, index) {
               final category = _categories[index];
               final isSelected = _selectedCategory == category;
               
               return Container(
-                margin: const EdgeInsets.only(right: 12),
+                margin: const EdgeInsets.only(right: 16),
                 child: GestureDetector(
                   onTap: () => _filterPosts(category),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue[600] : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      color: isSelected ? AppTheme.primaryBlue : AppTheme.white,
+                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: isSelected ? Colors.blue[600]! : Colors.grey[300]!,
+                        color: isSelected ? AppTheme.primaryBlue : AppTheme.mediumGray,
                       ),
+                      boxShadow: isSelected ? AppTheme.softShadow : null,
                     ),
                     child: Text(
                       category == 'all' ? 'All' : category.replaceAll('_', ' ').toUpperCase(),
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
+                        color: isSelected ? AppTheme.white : AppTheme.textSecondary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -199,8 +213,9 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
         Expanded(
           child: RefreshIndicator(
             onRefresh: _loadData,
+            color: AppTheme.primaryBlue,
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               itemCount: _posts.length,
               itemBuilder: (context, index) {
                 return _buildPostCard(_posts[index]);
@@ -213,108 +228,95 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
   }
 
   Widget _buildPostCard(CommunityPost post) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
+      margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // User Info
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.blue[100],
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
                   child: Text(
                     post.displayName[0].toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.blue[600],
+                    style: const TextStyle(
+                      color: AppTheme.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.displayName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      post.displayName,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      Text(
-                        '@${post.username} • ${_getTimeAgo(post.createdAt)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                PopupMenuButton(
-                  icon: Icon(Icons.more_horiz, color: Colors.grey[600]),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'report',
-                      child: Row(
-                        children: [
-                          Icon(Icons.flag, color: Colors.red[600], size: 20),
-                          const SizedBox(width: 8),
-                          const Text('Report'),
-                        ],
+                    ),
+                    Text(
+                      '@${post.username} • ${_getTimeAgo(post.createdAt)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary,
                       ),
                     ),
                   ],
-                  onSelected: (value) {
-                    if (value == 'report') {
-                      _showReportDialog(post.id, 'post');
-                    }
-                  },
                 ),
-              ],
-            ),
+              ),
+              PopupMenuButton(
+                icon: Icon(Icons.more_horiz, color: AppTheme.textSecondary),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        Icon(Icons.flag_outlined, color: Colors.red[600], size: 20),
+                        const SizedBox(width: 8),
+                        const Text('Report'),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 'report') {
+                    _showReportDialog(post.id, 'post');
+                  }
+                },
+              ),
+            ],
           ),
           
+          const SizedBox(height: 16),
+          
           // Post Content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              post.content,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
-                height: 1.4,
-              ),
+          Text(
+            post.content,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              height: 1.5,
             ),
           ),
           
           // Progress Data (if available)
-          if (post.progressData != null)
+          if (post.progressData != null) ...[
+            const SizedBox(height: 16),
             Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green[200]!),
+                color: AppTheme.lightGreen,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -328,81 +330,103 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
                 ],
               ),
             ),
+          ],
           
           // Tags
-          if (post.tags.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Wrap(
-                spacing: 8,
-                children: post.tags.map((tag) => 
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(12),
+          if (post.tags.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: post.tags.map((tag) => 
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '#$tag',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppTheme.primaryBlue,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: Text(
-                      '#$tag',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                ).toList(),
-              ),
+                  ),
+                )
+              ).toList(),
             ),
+          ],
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
           // Actions
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => _likePost(post.id),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => _likePost(post.id),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: post.isLikedByCurrentUser 
+                        ? Colors.red.withOpacity(0.1) 
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         post.isLikedByCurrentUser ? Icons.favorite : Icons.favorite_border,
-                        color: post.isLikedByCurrentUser ? Colors.red : Colors.grey[600],
+                        color: post.isLikedByCurrentUser ? Colors.red : AppTheme.textSecondary,
                         size: 20,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 6),
                       Text(
                         '${post.likesCount}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: post.isLikedByCurrentUser ? Colors.red : AppTheme.textSecondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 24),
-                GestureDetector(
-                  onTap: () => _showCommentsDialog(post),
+              ),
+              const SizedBox(width: 16),
+              GestureDetector(
+                onTap: () => _showCommentsDialog(post),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.comment_outlined, color: Colors.grey[600], size: 20),
-                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.comment_outlined, 
+                        color: AppTheme.textSecondary, 
+                        size: 20,
+                      ),
+                      const SizedBox(width: 6),
                       Text(
                         '${post.commentsCount}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Spacer(),
-                Icon(Icons.share_outlined, color: Colors.grey[600], size: 20),
-              ],
-            ),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.share_outlined, color: AppTheme.textSecondary, size: 20),
+              ),
+            ],
           ),
         ],
       ),
@@ -414,17 +438,17 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontSize: 16,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.green[700],
+            color: AppTheme.primaryGreen,
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.green[600],
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppTheme.darkGreen,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -437,7 +461,7 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       itemCount: _topics.length,
       itemBuilder: (context, index) {
         return _buildTopicCard(_topics[index]);
@@ -446,32 +470,19 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
   }
 
   Widget _buildTopicCard(ForumTopic topic) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               topic.iconEmoji,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 28),
             ),
           ),
           const SizedBox(width: 16),
@@ -481,40 +492,35 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
               children: [
                 Text(
                   topic.title,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   topic.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.people, size: 16, color: Colors.grey[500]),
+                    Icon(Icons.people_outline, size: 16, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       '${topic.subscribersCount}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.chat_bubble_outline, size: 16, color: Colors.grey[500]),
+                    Icon(Icons.chat_bubble_outline, size: 16, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       '${topic.postsCount}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -526,17 +532,17 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
             children: [
               if (topic.isSubscribed)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.blue[600],
-                    borderRadius: BorderRadius.circular(16),
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
                     'Joined',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      color: AppTheme.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 )
@@ -544,16 +550,18 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
                 OutlinedButton(
                   onPressed: () => _subscribeToTopic(topic.id),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.blue[600]!),
+                    side: const BorderSide(color: AppTheme.primaryBlue),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: Text(
                     'Join',
                     style: TextStyle(
-                      color: Colors.blue[600],
-                      fontSize: 12,
+                      color: AppTheme.primaryBlue,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -570,7 +578,7 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       itemCount: _challenges.length,
       itemBuilder: (context, index) {
         return _buildChallengeCard(_challenges[index]);
@@ -582,36 +590,23 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
     final daysLeft = challenge.endDate.difference(DateTime.now()).inDays;
     final isActive = daysLeft > 0;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AnimatedCard(
+      margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _getChallengeColor(challenge.type).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   _getChallengeIcon(challenge.type),
                   color: _getChallengeColor(challenge.type),
-                  size: 24,
+                  size: 28,
                 ),
               ),
               const SizedBox(width: 12),
@@ -621,18 +616,16 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
                   children: [
                     Text(
                       challenge.title,
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
                       ),
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       isActive ? '$daysLeft days left' : 'Challenge ended',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: isActive ? Colors.green[600] : Colors.red[600],
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -641,13 +634,12 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
             ],
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
           Text(
             challenge.description,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.textSecondary,
               height: 1.4,
             ),
           ),
@@ -656,13 +648,12 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
           
           Row(
             children: [
-              Icon(Icons.people, size: 16, color: Colors.grey[500]),
+              Icon(Icons.people_outline, size: 16, color: AppTheme.textSecondary),
               const SizedBox(width: 4),
               Text(
                 '${challenge.participantsCount} participants',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
@@ -673,10 +664,9 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
                     const SizedBox(width: 4),
                     Text(
                       'Prize available',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.amber[600],
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -689,40 +679,45 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
           if (challenge.isParticipating)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green[200]!),
+                color: AppTheme.lightGreen,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3)),
               ),
               child: Text(
                 'You\'re participating! 🎉',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.green[700],
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppTheme.darkGreen,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             )
           else if (isActive)
-            CustomButton(
+            GradientButton(
               text: 'Join Challenge',
               onPressed: () => _joinChallenge(challenge.id),
-              backgroundColor: _getChallengeColor(challenge.type),
+              gradient: LinearGradient(
+                colors: [
+                  _getChallengeColor(challenge.type),
+                  _getChallengeColor(challenge.type).withOpacity(0.8),
+                ],
+              ),
             )
           else
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.mediumGray.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'Challenge Ended',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[600],
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppTheme.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -733,36 +728,51 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
   }
 
   Widget _buildChatTab() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'Chat Feature',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Center(
+        child: AnimatedCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.chat_bubble_outline, 
+                  size: 64, 
+                  color: AppTheme.primaryBlue,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Chat Feature',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Connect with accountability buddies\nand join group conversations',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              GradientButton(
+                text: 'Coming Soon',
+                onPressed: null,
+                gradient: LinearGradient(
+                  colors: [AppTheme.mediumGray, AppTheme.mediumGray],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Connect with accountability buddies\nand join group conversations',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
-          ),
-          const SizedBox(height: 24),
-          CustomButton(
-            text: 'Coming Soon',
-            onPressed: null,
-            backgroundColor: Colors.grey[300],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -770,13 +780,13 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
   Color _getChallengeColor(String type) {
     switch (type) {
       case 'fitness':
-        return Colors.orange[600]!;
+        return AppTheme.orange;
       case 'mental_health':
-        return Colors.purple[600]!;
+        return AppTheme.purple;
       case 'nutrition':
-        return Colors.green[600]!;
+        return AppTheme.primaryGreen;
       default:
-        return Colors.blue[600]!;
+        return AppTheme.primaryBlue;
     }
   }
 
@@ -833,7 +843,8 @@ class _CommunityScreenState extends State<CommunityScreen> with TickerProviderSt
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Successfully joined the challenge! 🎉'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.primaryGreen,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -976,6 +987,7 @@ class _ReportDialogState extends State<ReportDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: const Text('Report Content'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -983,15 +995,21 @@ class _ReportDialogState extends State<ReportDialog> {
         children: [
           Text(
             'Why are you reporting this ${widget.contentType}?',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.textSecondary,
+            ),
           ),
           const SizedBox(height: 16),
           Column(
             children: _reportReasons.map((reason) => 
               RadioListTile<String>(
-                title: Text(reason, style: const TextStyle(fontSize: 14)),
+                title: Text(
+                  reason, 
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 value: reason,
                 groupValue: _selectedReason,
+                activeColor: AppTheme.primaryBlue,
                 onChanged: (value) {
                   setState(() {
                     _selectedReason = value!;
@@ -1007,7 +1025,6 @@ class _ReportDialogState extends State<ReportDialog> {
               controller: _descriptionController,
               decoration: const InputDecoration(
                 labelText: 'Please describe the issue',
-                border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
@@ -1017,7 +1034,7 @@ class _ReportDialogState extends State<ReportDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
         ),
         TextButton(
           onPressed: _selectedReason.isNotEmpty ? _submitReport : null,
@@ -1043,7 +1060,8 @@ class _ReportDialogState extends State<ReportDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Report submitted. Thank you for keeping our community safe.'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.primaryGreen,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -1055,6 +1073,7 @@ class CommunityProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(title: const Text('Community Profile')),
       body: const Center(child: Text('Community Profile Screen')),
     );
