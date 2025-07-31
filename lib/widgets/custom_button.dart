@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -28,12 +29,13 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
-          foregroundColor: textColor ?? Colors.white,
+          backgroundColor: backgroundColor ?? AppTheme.primaryBlue,
+          foregroundColor: textColor ?? AppTheme.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 2,
+          elevation: 0,
+          shadowColor: Colors.transparent,
         ),
         child: isLoading
             ? SizedBox(
@@ -42,7 +44,7 @@ class CustomButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    textColor ?? Colors.white,
+                    textColor ?? AppTheme.white,
                   ),
                 ),
               )
