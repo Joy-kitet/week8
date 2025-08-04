@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/workout.dart';
 import 'firebase_service.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 class WorkoutService {

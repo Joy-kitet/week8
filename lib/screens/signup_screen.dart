@@ -263,7 +263,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text(
+                          child: const Text(
                             'Sign In',
                             style: TextStyle(
                               color: AppTheme.primaryBlue,

@@ -8,6 +8,24 @@ class AppTheme {
   static const Color lightGreen = Color(0xFFE8F8E5);
   static const Color darkBlue = Color(0xFF2C5282);
   static const Color darkGreen = Color(0xFF38A169);
+  static Color get backgroundColor => lightTheme.colorScheme.surface;
+  static const Color primaryColor = Colors.blue;
+  static Color textTertiary = Colors.grey;
+  static Color secondaryColor = Colors.blue; // Define the secondaryColor property
+  static Color get accentColor => Colors.blue;
+  static Color warningColor = Colors.orange; // or any other color you want
+  static Color successColor = Colors.green; // or any other color you want
+  static Color get surfaceColor => Colors.white; // or some other default color
+  static double radiusMedium = 10.0; 
+  static const double spaceM = 16.0;
+  static double spaceS = 8.0; 
+  static const double radiusSmall = 8.0;
+   static const double spaceXS = 4.0; 
+   
+
+
+
+
   
   // Neutral colors
   static const Color white = Color(0xFFFFFFFF);
@@ -22,6 +40,7 @@ class AppTheme {
   static const Color purple = Color(0xFF9C88FF);
   static const Color pink = Color(0xFFFF6B9D);
   static const Color yellow = Color(0xFFFFC107);
+
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -98,7 +117,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -130,15 +149,15 @@ class AppTheme {
         fillColor: white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: mediumGray),
+          borderSide: const BorderSide(color: mediumGray),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: mediumGray),
+          borderSide: const BorderSide(color: mediumGray),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryBlue, width: 2),
+          borderSide: const BorderSide(color: primaryBlue, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
@@ -208,6 +227,15 @@ class AppTheme {
     ),
   ];
 
+  static List<BoxShadow> get cardShadow => [
+    BoxShadow(
+      color: Colors.grey.withOpacity(0.1),
+      spreadRadius: 1,
+      blurRadius: 3,
+      offset: const Offset(0, 1),
+    ),
+  ];
+
   static List<BoxShadow> get mediumShadow => [
     BoxShadow(
       color: Colors.black.withOpacity(0.08),
@@ -215,6 +243,15 @@ class AppTheme {
       offset: const Offset(0, 4),
     ),
   ];
+
+  static List<BoxShadow> get elevatedShadow => [
+  BoxShadow(
+    color: Colors.black.withOpacity(0.08),
+    blurRadius: 12,
+    offset: const Offset(0, 4),
+  ),
+];
+
 
   static List<BoxShadow> get strongShadow => [
     BoxShadow(
